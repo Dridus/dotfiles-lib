@@ -4,11 +4,11 @@
   };
   outputs = inputs: {
     lib = {
-      inherit (import ../lib/modules.nix { inherit (inputs.nixpkgs) lib; })
+      inherit (import ./modules.nix { inherit (inputs.nixpkgs) lib; })
         partialApplyModule
         publishModules
         ;
-      foos = import ../lib/foos.nix { inherit (inputs.nixpkgs) lib; };
+      foos = import ./foos.nix { inherit (inputs.nixpkgs) lib; };
     };
   };
 }
