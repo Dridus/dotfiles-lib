@@ -6,7 +6,7 @@
 # can be easily used as an partially applied module argument rather than globally in
 # _module.args
 { lib }:
-storeRoot:
+{ storeRoot, sourceRootSubdir }:
 let
   inherit (builtins) getEnv;
   inherit (lib) types;
@@ -23,7 +23,7 @@ let
     pkgs: path:
     let
       relative = relativePath path;
-      full = foosSourceRoot + relative;
+      full = "${foosSourceRoot}/${sourceRootSubdir}/${relative}";
     in
     pkgs.runCommand "foos-${relative}" { } "ln -s ${full} $out";
 in
