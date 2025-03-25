@@ -14,10 +14,44 @@ let
 
   foosSourceRoot = getEnv "FOOS_SOURCE_ROOT";
 
+  resolveParents =
+    let
+      inherit (builtins)
+        head
+        length
+        null
+        split
+        tail
+        ;
+      # my kingdom for pattern matching
+      reassemble =
+        ss:
+        if ss == [ ] then
+          ""
+        else
+          let
+            prefix = head ss;
+            tl = tail ss;
+            groups = head tl;
+            rest = tail tl;
+          in
+          prefix + (if tl == [ ] then "" else head groups + reassemble rest);
+      maybeReassembleAndRecurse =
+        ss:
+        if ss == [ ] then
+          ""
+        else if length ss == 1 then
+          head ss
+        else
+          resolveParents (reassemble ss);
+    in
+    str: maybeReassembleAndRecurse (split "/[^/]+/\\.\\.(/|$)" str);
+
+  storeRootPrefix = resolveParents (toString storeRoot);
   relativePath =
     path:
     assert types.path.check path;
-    removePrefix (toString storeRoot) (toString path);
+    removePrefix storeRootPrefix (toString path);
 
   mkOOSLink =
     pkgs: path:
